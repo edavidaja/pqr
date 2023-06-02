@@ -1,6 +1,6 @@
 FROM ubuntu:jammy
 
-ARG R_VERSION=4.2.1
+ARG R_VERSION=4.3.0
 
 RUN apt-get update -y \ 
     && apt-get install -y curl gdebi-core \
