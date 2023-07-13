@@ -1,7 +1,7 @@
 FROM ubuntu:jammy
 
-ARG QUARTO_VERSION=1.4.11
-ARG TYPST_VERSION=0.3.0
+ARG QUARTO_VERSION=1.4.226
+ARG TYPST_VERSION=0.6.0
 
 RUN apt-get update -y \ 
     && apt-get install -y curl gdebi-core xz-utils \
