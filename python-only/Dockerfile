@@ -1,6 +1,6 @@
 FROM ubuntu:jammy
 
-ARG PYTHON_VERSION=3.11.3
+ARG PYTHON_VERSION=3.10.13
 
 RUN apt-get update -y \ 
     && apt-get install -y curl build-essential \

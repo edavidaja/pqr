@@ -1,6 +1,6 @@
 FROM ubuntu:jammy
 
-ARG QUARTO_VERSION=1.3.310
+ARG QUARTO_VERSION=1.4.424
 
 RUN apt-get update -y \ 
     && apt-get install -y curl gdebi-core \
