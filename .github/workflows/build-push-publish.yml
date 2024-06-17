@@ -42,7 +42,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        R_VERSION: ["4.3.2", "4.4.1"]
+        R_VERSION: ["4.0.5", "4.1.3", "4.2.3", "4.3.3", "4.4.1"]
         PYTHON_VERSION: ["3.9.19", "3.10.14", "3.11.9", "3.12.3"]
         QUARTO_VERSION: ["1.4.555", "1.5.45"]
     runs-on: ubuntu-latest
