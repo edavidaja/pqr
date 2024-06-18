@@ -5,7 +5,7 @@ async function updateConnect(
   quartoVersion = Deno.env.get("QUARTO_VERSION"),
   rVersion = Deno.env.get("R_VERSION"),
 ): Promise<string> {
-  const installations = {
+  const installations = JSON.stringify({
     title: `Python ${pythonVersion} | Quarto ${quartoVersion} | R ${rVersion}`,
     cluster_name: "Kubernetes",
     name: `ghcr.io/edavidaja/pqr:python${pythonVersion}-quarto${quartoVersion}-r${rVersion}`,
@@ -27,8 +27,8 @@ async function updateConnect(
         version: rVersion,
       }],
     },
-  };
-  const body = JSON.stringify({ installations });
+  });
+
 
   const response = await fetch(`${server}/__api__/v1/environments`, {
     method: "POST",
@@ -36,10 +36,13 @@ async function updateConnect(
       "Content-Type": "application/json",
       "Authorization": `Key ${key}`,
     },
-    body,
+    body: installations,
   });
 
-  return response.json();
+
+  const result = await response.json();
+  console.log(result);
+  return result;
 }
 
-updateConnect();
+await updateConnect();
