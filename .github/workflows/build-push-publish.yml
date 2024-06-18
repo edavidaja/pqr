@@ -57,4 +57,4 @@ jobs:
 
       - name: Publish
         run: |
-          deno run --allow-env --allow-net update-connect.ts
+          deno run --allow-env --allow-net publish.ts
