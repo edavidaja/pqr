@@ -7,9 +7,9 @@ jobs:
   build:
     strategy:
       matrix:
-        R_VERSION: ["4.0.5", "4.1.3", "4.2.3", "4.3.3", "4.4.1"]
         PYTHON_VERSION: ["3.9.19", "3.10.14", "3.11.9", "3.12.3"]
         QUARTO_VERSION: ["1.4.555", "1.5.45"]
+        R_VERSION: ["4.0.5", "4.1.3", "4.2.3", "4.3.3", "4.4.1"]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -42,9 +42,9 @@ jobs:
     needs: build
     strategy:
       matrix:
-        R_VERSION: ["4.0.5", "4.1.3", "4.2.3", "4.3.3", "4.4.1"]
         PYTHON_VERSION: ["3.9.19", "3.10.14", "3.11.9", "3.12.3"]
         QUARTO_VERSION: ["1.4.555", "1.5.45"]
+        R_VERSION: ["4.0.5", "4.1.3", "4.2.3", "4.3.3", "4.4.1"]
     runs-on: ubuntu-latest
     environment: colorado
     steps:
@@ -56,5 +56,11 @@ jobs:
           deno-version: v1.x
 
       - name: Publish
+        env:
+          PYTHON_VERSION: ${{ matrix.PYTHON_VERSION }}
+          QUARTO_VERSION: ${{ matrix.QUARTO_VERSION }}
+          R_VERSION: ${{ matrix.R_VERSION }}
+          CONNECT_SERVER: ${{ env.CONNECT_SERVER }}
+          CONNECT_API_KEY: ${{ secrets.CONNECT_API_KEY }}
         run: |
           deno run --allow-env --allow-net publish.ts
