@@ -3,9 +3,7 @@ FROM ubuntu:jammy
 ARG R_VERSION=4.3.2
 ARG QUARTO_VERSION=1.4.533
 ARG PYTHON_VERSION=3.10.13
-
-# add sysdeps from rstudio-docker-products
-# https://github.com/rstudio/rstudio-docker-products/blob/3718640927a262f777646c762d1d98eba1496280/content/base/Dockerfile.ubuntu2204#L12-L79
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Locale configuration --------------------------------------------------------#
 RUN apt-get update \
@@ -16,7 +14,8 @@ RUN apt-get update \
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
-ENV TZ=UTC
+ENV TZ UTC
+
 
 # Installation prerequisites --------------------------------------------------#
 # curl is used to download things.
@@ -27,53 +26,73 @@ RUN apt-get update \
       libev-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# System dependencies needed by popular R packages
-# https://docs.rstudio.com/rsc/post-setup-tool/#install-system-dependencies
-
-# Now, install the system requirements for R packages.
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-      default-jdk \
-      gdal-bin \
-      git \
-      gsfonts \
-      imagemagick \
-      libarchive-dev \
-      libcairo2-dev \
-      libcurl4-openssl-dev \
-      libfontconfig1-dev \
-      libfreetype6-dev \
-      libfribidi-dev \
-      libgdal-dev \
-      libgeos-dev \
-      libgl1-mesa-dev \
-      libglpk-dev \
-      libglu1-mesa-dev \
-      libgmp3-dev \
-      libharfbuzz-dev \
-      libicu-dev \
-      libjpeg-dev \
-      libmagick++-dev \
-      libmysqlclient-dev \
-      libpng-dev \
-      libpq-dev \
-      libproj-dev \
-      libsodium-dev \
-      libssh2-1-dev \
-      libssl-dev \
-      libtiff-dev \
-      libudunits2-dev \
-      libv8-dev \
-      libicu-dev \
-      libxml2-dev \
-      make \
-      perl \
-      tcl \
-      tk \
-      tk-dev \
-      tk-table \
-      unixodbc-dev \
-      zlib1g-dev \
+### Update/upgrade system packages ###
+RUN apt-get update --fix-missing  \
+    && apt-get upgrade -yq \
+    && apt-get install -yq --no-install-recommends \
+        apt-transport-https \
+        ca-certificates \
+        cmake \
+        cracklib-runtime \
+        curl \
+        default-jdk \
+        dirmngr \
+        dpkg-sig \
+        g++ \
+        gcc \
+        gdal-bin \
+        gfortran \
+        git \
+        gpg \
+        gpg-agent \
+        gsfonts \
+        imagemagick \
+        jq \
+        libcairo2-dev \
+        libcurl4-openssl-dev \
+        libev-dev \
+        libfontconfig1-dev \
+        libfreetype6-dev \
+        libfribidi-dev \
+        libgdal-dev \
+        libgeos-dev \
+        libgl1-mesa-dev \
+        libglpk-dev \
+        libglu1-mesa-dev \
+        libgmp3-dev \
+        libharfbuzz-dev \
+        libicu-dev \
+        libjpeg-dev \
+        libmagick++-dev \
+        libmysqlclient-dev \
+        libopenblas-dev \
+        libpaper-utils \
+        libpcre2-dev \
+        libpng-dev \
+        libproj-dev \
+        libsodium-dev \
+        libssh2-1-dev \
+        libssl-dev \
+        libtiff-dev \
+        libudunits2-dev \
+        libv8-dev \
+        libxml2-dev \
+        locales \
+        make \
+        openssh-client \
+        pandoc \
+        perl \
+        sudo \
+        tcl \
+        tk \
+        tk-dev \
+        tk-table \
+        tzdata \
+        unixodbc-dev \
+        unzip \
+        wget \
+        zip \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update -y \ 
@@ -87,3 +106,9 @@ RUN apt-get update -y \
     && curl -o quarto-linux-amd64.deb -L https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb \
     && gdebi -n ./quarto-linux-amd64.deb \
     && rm quarto-linux-amd64.deb
+
+### Clean up ###
+RUN apt-get install -yqf --no-install-recommends \
+&& apt-get autoremove \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/*
