@@ -1,8 +1,8 @@
 FROM ubuntu:jammy
 
-ARG R_VERSION=4.3.2
-ARG QUARTO_VERSION=1.4.533
-ARG PYTHON_VERSION=3.10.13
+ARG R_VERSION=4.4.2
+ARG QUARTO_VERSION=1.6.40
+ARG PYTHON_VERSION=3.13.1
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Locale configuration --------------------------------------------------------#
@@ -11,10 +11,10 @@ RUN apt-get update \
     && localedef -i en_US -f UTF-8 en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
 
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-ENV TZ UTC
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+ENV TZ=UTC
 
 
 # Installation prerequisites --------------------------------------------------#
@@ -103,6 +103,7 @@ RUN apt-get update -y \
     && curl -O https://cdn.rstudio.com/python/ubuntu-2204/pkgs/python-${PYTHON_VERSION}_1_amd64.deb \
     && apt-get install -yq --no-install-recommends ./python-${PYTHON_VERSION}_1_amd64.deb \
     && rm -f ./python-${PYTHON_VERSION}_1_amd64.deb \
+    && /opt/python/${PYTHON_VERSION}/bin/python -m pip install -U pip setuptools wheel \
     && curl -o quarto-linux-amd64.deb -L https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb \
     && gdebi -n ./quarto-linux-amd64.deb \
     && rm quarto-linux-amd64.deb
