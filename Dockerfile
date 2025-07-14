@@ -2,7 +2,7 @@ FROM ubuntu:jammy
 
 ARG R_VERSION=4.4.2
 ARG QUARTO_VERSION=1.6.40
-ARG PYTHON_VERSION=3.13.1
+ARG PYTHON_VERSION=3.13.5t
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Locale configuration --------------------------------------------------------#
@@ -114,8 +114,9 @@ RUN ARCH=$(arch) && \
 # Install Python, Quarto, and R
 RUN . /etc/environment \
     && rig add ${R_VERSION} --without-pak \
+    && CLEAN_VERSION="${PYTHON_VERSION%t}" \
     && /usr/local/bin/uv python install --install-dir=/opt/python ${PYTHON_VERSION} \
-    && ln -s /opt/python/cpython-${PYTHON_VERSION}* /opt/python/${PYTHON_VERSION} \
+    && ln -s /opt/python/cpython-${CLEAN_VERSION}* /opt/python/${PYTHON_VERSION} \
     && /opt/python/${PYTHON_VERSION}/bin/python -m pip install -U pip setuptools wheel --break-system-packages \
     && curl -o quarto-linux-$QUARTO_ARCH.deb -L https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-$QUARTO_ARCH.deb \
     && apt-get install ./quarto-linux-$QUARTO_ARCH.deb \
