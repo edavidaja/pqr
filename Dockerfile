@@ -115,7 +115,7 @@ RUN ARCH=$(arch) && \
 RUN . /etc/environment \
     && rig add ${R_VERSION} --without-pak \
     && /usr/local/bin/uv python install --install-dir=/opt/python ${PYTHON_VERSION} \
-    && ln -s /opt/python/cpython-${PYTHON_VERSION}-* /opt/python/${PYTHON_VERSION} \
+    && ln -s /opt/python/cpython-${PYTHON_VERSION}* /opt/python/${PYTHON_VERSION} \
     && /opt/python/${PYTHON_VERSION}/bin/python -m pip install -U pip setuptools wheel --break-system-packages \
     && curl -o quarto-linux-$QUARTO_ARCH.deb -L https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-$QUARTO_ARCH.deb \
     && apt-get install ./quarto-linux-$QUARTO_ARCH.deb \
