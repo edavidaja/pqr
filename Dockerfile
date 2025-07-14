@@ -99,14 +99,27 @@ RUN apt-get update --fix-missing  \
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 RUN curl -Ls https://github.com/r-lib/rig/releases/download/latest/rig-linux-$(arch)-latest.tar.gz | tar xz -C /usr/local
 
+# Determine architecture for Quarto download
+RUN ARCH=$(arch) && \
+    if [ "$ARCH" = "x86_64" ]; then \
+        QUARTO_ARCH="amd64"; \
+    elif [ "$ARCH" = "aarch64" ]; then \
+        QUARTO_ARCH="arm64"; \
+    else \
+        echo "Unsupported architecture: $ARCH" >&2; \
+        exit 1; \
+    fi && \
+    echo "QUARTO_ARCH=$QUARTO_ARCH" >> /etc/environment
+
 # Install Python, Quarto, and R
-RUN rig add ${R_VERSION} --without-pak \
+RUN . /etc/environment \
+    && rig add ${R_VERSION} --without-pak \
     && /usr/local/bin/uv python install --install-dir=/opt/python ${PYTHON_VERSION} \
     && ln -s /opt/python/cpython-${PYTHON_VERSION}-* /opt/python/${PYTHON_VERSION} \
     && /opt/python/${PYTHON_VERSION}/bin/python -m pip install -U pip setuptools wheel --break-system-packages \
-    && curl -o quarto-linux-amd64.deb -L https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb \
-    && apt-get install ./quarto-linux-amd64.deb \
-    && rm quarto-linux-amd64.deb
+    && curl -o quarto-linux-$QUARTO_ARCH.deb -L https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-$QUARTO_ARCH.deb \
+    && apt-get install ./quarto-linux-$QUARTO_ARCH.deb \
+    && rm quarto-linux-$QUARTO_ARCH.deb
 
 ### Clean up ###
 RUN apt-get install -yqf --no-install-recommends \

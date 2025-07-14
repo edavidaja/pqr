@@ -33,7 +33,7 @@ jobs:
             PYTHON_VERSION=${{ matrix.PYTHON_VERSION }}
             QUARTO_VERSION=${{ matrix.QUARTO_VERSION }}
             R_VERSION=${{ matrix.R_VERSION }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             ghcr.io/edavidaja/pqr:python${{ matrix.PYTHON_VERSION }}-quarto${{ matrix.QUARTO_VERSION }}-r${{ matrix.R_VERSION }}
