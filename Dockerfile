@@ -95,17 +95,17 @@ RUN apt-get update --fix-missing  \
         zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update -y \ 
-    && apt-get install -y curl gdebi-core \
-    && curl -O https://cdn.rstudio.com/r/ubuntu-2204/pkgs/r-${R_VERSION}_1_amd64.deb \
-    && gdebi -n r-${R_VERSION}_1_amd64.deb \
-    && rm r-${R_VERSION}_1_amd64.deb \
-    && curl -O https://cdn.rstudio.com/python/ubuntu-2204/pkgs/python-${PYTHON_VERSION}_1_amd64.deb \
-    && apt-get install -yq --no-install-recommends ./python-${PYTHON_VERSION}_1_amd64.deb \
-    && rm -f ./python-${PYTHON_VERSION}_1_amd64.deb \
-    && /opt/python/${PYTHON_VERSION}/bin/python -m pip install -U pip setuptools wheel \
+# Get rig and uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+RUN curl -Ls https://github.com/r-lib/rig/releases/download/latest/rig-linux-$(arch)-latest.tar.gz | tar xz -C /usr/local
+
+# Install Python, Quarto, and R
+RUN rig add ${R_VERSION} --without-pak \
+    && /usr/local/bin/uv python install --install-dir=/opt/python ${PYTHON_VERSION} \
+    && ln -s /opt/python/cpython-${PYTHON_VERSION}-* /opt/python/${PYTHON_VERSION} \
+    && /opt/python/${PYTHON_VERSION}/bin/python -m pip install -U pip setuptools wheel --break-system-packages \
     && curl -o quarto-linux-amd64.deb -L https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb \
-    && gdebi -n ./quarto-linux-amd64.deb \
+    && apt-get install ./quarto-linux-amd64.deb \
     && rm quarto-linux-amd64.deb
 
 ### Clean up ###
