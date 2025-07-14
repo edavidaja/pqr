@@ -2,6 +2,7 @@ name: Build and Publish to GHCR
 
 on:
   workflow_dispatch:
+  pull_request:
 
 jobs:
   build:
@@ -19,6 +20,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -34,7 +36,7 @@ jobs:
             QUARTO_VERSION=${{ matrix.QUARTO_VERSION }}
             R_VERSION=${{ matrix.R_VERSION }}
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ghcr.io/edavidaja/pqr:python${{ matrix.PYTHON_VERSION }}-quarto${{ matrix.QUARTO_VERSION }}-r${{ matrix.R_VERSION }}
 
