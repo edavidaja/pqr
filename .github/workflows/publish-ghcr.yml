@@ -2,14 +2,15 @@ name: Build and Publish to GHCR
 
 on:
   workflow_dispatch:
+  pull_request:
 
 jobs:
   build:
     strategy:
       matrix:
-        PYTHON_VERSION: ["3.10.17", "3.11.12", "3.12.10", "3.13.3"]
-        QUARTO_VERSION: ["1.7.31"]
-        R_VERSION: ["4.2.3", "4.3.3", "4.4.3", "4.5.0"]
+        PYTHON_VERSION: ["3.10.17", "3.11.12", "3.12.10", "3.13.5", "3.13.5t"]
+        QUARTO_VERSION: ["1.7.32"]
+        R_VERSION: ["4.2.3", "4.3.3", "4.4.3", "4.5.1"]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,6 +20,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -33,8 +35,8 @@ jobs:
             PYTHON_VERSION=${{ matrix.PYTHON_VERSION }}
             QUARTO_VERSION=${{ matrix.QUARTO_VERSION }}
             R_VERSION=${{ matrix.R_VERSION }}
-          platforms: linux/amd64
-          push: true
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ghcr.io/edavidaja/pqr:python${{ matrix.PYTHON_VERSION }}-quarto${{ matrix.QUARTO_VERSION }}-r${{ matrix.R_VERSION }}
 
