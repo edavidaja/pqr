@@ -1,0 +1,24 @@
+name: Version matrix
+on:
+  workflow_call:
+    outputs:
+      python:
+        description: "Python versions array"
+        value: ${{ jobs.versions.outputs.python }}
+      quarto:
+        description: "Quarto versions array" 
+        value: ${{ jobs.versions.outputs.quarto }}
+      r:
+        description: "R versions array"
+        value: ${{ jobs.versions.outputs.r }}
+
+jobs:
+  versions:
+    runs-on: ubuntu-latest
+    outputs:
+      python: '["3.10.17", "3.11.13", "3.12.11", "3.13.7", "3.13.7t"]'
+      quarto: '["1.7.34", "1.8.24"]'
+      r: '["4.2.3", "4.3.3", "4.4.3", "4.5.1"]'
+    steps:
+      - name: Load versions
+        run: echo "Version definitions loaded"

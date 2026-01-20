@@ -5,12 +5,16 @@ on:
   pull_request:
 
 jobs:
+  get-versions:
+    uses: ./.github/workflows/versions.yml
+  
   build:
+    needs: get-versions
     strategy:
       matrix:
-        PYTHON_VERSION: ["3.10.17", "3.11.12", "3.12.10", "3.13.5", "3.13.5t"]
-        QUARTO_VERSION: ["1.7.32"]
-        R_VERSION: ["4.2.3", "4.3.3", "4.4.3", "4.5.1"]
+        PYTHON_VERSION: ${{fromJson(needs.get-versions.outputs.python)}}
+        QUARTO_VERSION: ${{fromJson(needs.get-versions.outputs.quarto)}}
+        R_VERSION: ${{fromJson(needs.get-versions.outputs.r)}}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
